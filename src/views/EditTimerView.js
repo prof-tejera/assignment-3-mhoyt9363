@@ -249,7 +249,6 @@ const InnerEditTimerView = ({ index, timer }) => {
 
           
           updateItem(item, Number(index));
-          // setTimerType("");
         }}
       >
         Save

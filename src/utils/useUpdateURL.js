@@ -1,7 +1,7 @@
 
 //--------------------------------------------------
 // Use the url host and pathname (captured at 
-// window load) and the queue (q) to build the
+// window load) and the latest queue (q) to build the
 // url and load it into the browser history.
 //--------------------------------------------------
 

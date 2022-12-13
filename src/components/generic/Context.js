@@ -26,11 +26,13 @@ const AppProvider = ({ children }) => {
   useEffect(() => {
 
     // I still need to figure out how to load a timer queue on window load
-    console.log('in use effect, url q', url, queue);
+    // I've confirmed that it loads once and I have access to the pathname
+    // It's failing at the Router layer; unable to find the route
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // update the url when it changes or the queue changes
   useEffect(() => {
 
     updateURL(url, queue);
