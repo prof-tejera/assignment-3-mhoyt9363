@@ -3,6 +3,7 @@ import getTotTime from '../../utils/getTotTime';
 import { useInterval } from './useInterval';
 import usePersistedState from './usePersistedState';
 import createHistoryItem from '../../utils/createHistoryItem';
+import updateURL from '../../utils/useUpdateURL';
 
 export const AppContext = React.createContext({});
 
@@ -24,16 +25,17 @@ const AppProvider = ({ children }) => {
   // used to check for a starting url, runs once
   useEffect(() => {
 
+    // I still need to figure out how to load a timer queue on window load
     console.log('in use effect, url q', url, queue);
-    
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
 
-    console.log('in useeffect, url updated', url);
-    
-  }, [ url ]);
+    updateURL(url, queue);
+ 
+  }, [ url, queue ]);
   
   useInterval(() => {
     // confirm total time of workout
@@ -79,6 +81,7 @@ const AppProvider = ({ children }) => {
         updateItem: (item, index) => {
           const updatedQueue = queue.map((q, i) => index === i ? item : q);
           setQueue(updatedQueue);
+          setUrl({...url, wkout: JSON.stringify(queue)});
         },
         removeItem: index => {
           setQueue(queue.filter((q, i) => i !== index));

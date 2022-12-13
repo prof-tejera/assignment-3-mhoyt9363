@@ -3,7 +3,7 @@ import { AppContext } from "../components/generic/Context";
 import TimerPrep from "../components/timers/TimerPrep";
 import styled from "styled-components";
 import ProgressBar from "../components/timers/ProgressBar";
-import useUpdateURL from "../utils/useUpdateURL";
+import updateURL from "../utils/useUpdateURL";
 
 //------------------------------------------
 // This view is the page that will display
@@ -29,9 +29,10 @@ background-color: lightgray;
 
 
 const TimersView = () => {
-  const { queue, time, totTime, paused, togglePaused, reset } = useContext(AppContext);
+  const { queue, url, time, totTime, paused, togglePaused, reset } = useContext(AppContext);
 
-  useUpdateURL();
+  // update url 
+  updateURL(url, queue);
 
   if (queue.length === 0) {
     return <Container>Add a timer to start building a workout!</Container>
