@@ -1,12 +1,14 @@
 
 //--------------------------------------------------
-// Use the url host and pathname (captured at 
-// window load) and the latest queue (q) to build the
-// url and load it into the browser history.
+// Use the queue to creata a string version and 
+// update the hash.
 //--------------------------------------------------
 
 const updateURLHash = ( q ) => {
 
+  // if no entries, an update isn't needed
+  if ( q.length === 0 ) return;
+    
   window.location.hash = `${JSON.stringify(q)}`;
 
   return;
