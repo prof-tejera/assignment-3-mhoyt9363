@@ -7,13 +7,13 @@ import testJSON from '../../utils/testJSON';
 
 const getUrlHash = ( ) => {
 
-  const h = window.location.hash.slice(1);
+  const h = decodeURI( window.location.hash.slice(1) );
 
   if (h.length === 0) {
     return([]);
   } else {
-    if ( testJSON({testString: h.slice(1)}) ) {             // check if valid JSON string
-      return(JSON.parse(window.location.hash.slice(1)));
+    if ( testJSON({ testString: h }) ) {             // check if valid JSON string
+      return(JSON.parse(h));
     } else {
       return([]);
     }

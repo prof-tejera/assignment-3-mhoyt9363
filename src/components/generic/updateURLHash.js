@@ -5,11 +5,11 @@
 // url and load it into the browser history.
 //--------------------------------------------------
 
-const updateURL = ( q ) => {
+const updateURLHash = ( q ) => {
 
   window.location.hash = `${JSON.stringify(q)}`;
 
   return;
 }
 
-export default updateURL;
+export default updateURLHash;

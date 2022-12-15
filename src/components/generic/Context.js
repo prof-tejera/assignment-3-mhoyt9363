@@ -4,6 +4,7 @@ import { useInterval } from './useInterval';
 import usePersistedState from './usePersistedState';
 import createHistoryItem from '../../utils/createHistoryItem';
 import getUrlHash from './getUrlHash';
+import updateURLHash from './updateURLHash';
 
 export const AppContext = React.createContext({});
 
@@ -15,8 +16,8 @@ const AppProvider = ({ children }) => {
   const [complete, setComplete] = usePersistedState('complete', false);
   const [wkoutHistory, setWkoutHistory] = usePersistedState('hist', []);
 
-   const [queue, setQueue] = useState( ( getUrlHash().length === 0 ) ? holdQ : getUrlHash() ); 
-  
+  const [queue, setQueue] = useState( ( getUrlHash().length === 0 ) ? holdQ : getUrlHash() ); 
+
   const [totTime, setTotTime] = usePersistedState('totTime', getTotTime({queueToTotal: queue})); 
 
   // update the hold q (persisted state) when the queue changes
@@ -66,18 +67,18 @@ const AppProvider = ({ children }) => {
         addItem: item =>  {
           setQueue(q => [...q, item]);
           setHoldQ(q => [...q, item]);
-          // setUrl({...url, wkout: JSON.stringify(queue)});
+          updateURLHash(queue);
           },
         updateItem: (item, index) => {
           const updatedQueue = queue.map((q, i) => index === i ? item : q);
           setQueue(updatedQueue);
           setHoldQ(updatedQueue);
-          // setUrl({...url, wkout: JSON.stringify(queue)});
+          updateURLHash(queue);
         },
         removeItem: index => {
           setQueue(queue.filter((q, i) => i !== index));
           setHoldQ(queue.filter((q, i) => i !== index));
-          // setUrl({...url, wkout: JSON.stringify(queue)});
+          updateURLHash(queue);
           },
         moveTimerUp: index => {
           if (index === 0)
@@ -88,7 +89,7 @@ const AppProvider = ({ children }) => {
             tmp.splice(index-1, 0, holdTimer);
             setQueue(tmp);
             setHoldQ(tmp);
-            // setUrl({...url, wkout: JSON.stringify(queue)});
+            updateURLHash(queue);
           }
         },
         moveTimerDown: index => {
@@ -100,7 +101,7 @@ const AppProvider = ({ children }) => {
             tmp.splice(index + 1, 0, holdTimer);
             setQueue(tmp);
             setHoldQ(tmp);
-            // setUrl({...url, wkout: JSON.stringify(queue)});
+            updateURLHash(queue);
           }
         },
         fastForward: index => {
