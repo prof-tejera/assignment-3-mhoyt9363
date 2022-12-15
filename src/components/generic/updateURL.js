@@ -5,11 +5,11 @@
 // url and load it into the browser history.
 //--------------------------------------------------
 
-const updateURL = ( url, q ) => {
+const updateURL = ( q ) => {
 
-  window.history.pushState({},'',`${url.origin}/${url.pathname}/${encodeURI(JSON.stringify(q))}`);
-    
-return;
+  window.location.hash = `${JSON.stringify(q)}`;
+
+  return;
 }
 
 export default updateURL;

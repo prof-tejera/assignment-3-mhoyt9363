@@ -3,41 +3,28 @@ import getTotTime from '../../utils/getTotTime';
 import { useInterval } from './useInterval';
 import usePersistedState from './usePersistedState';
 import createHistoryItem from '../../utils/createHistoryItem';
-import updateURL from '../../utils/useUpdateURL';
+import getUrlHash from './getUrlHash';
 
 export const AppContext = React.createContext({});
 
 const AppProvider = ({ children }) => {
 
+  const [holdQ, setHoldQ] = usePersistedState('queue', []);
   const [paused, setPaused] = usePersistedState('paused', true);
   const [time, setTime] = usePersistedState('time', 0);
   const [complete, setComplete] = usePersistedState('complete', false);
-  const [totTime, setTotTime] = usePersistedState('totTime', 0);
   const [wkoutHistory, setWkoutHistory] = usePersistedState('hist', []);
-  const [queue, setQueue] = usePersistedState('queue', []);
 
-  const [url, setUrl] = useState( {
-    pathname: window.location.pathname,
-    origin: window.location.origin,
-    wkout: '',
-  }  );
+   const [queue, setQueue] = useState( ( getUrlHash().length === 0 ) ? holdQ : getUrlHash() ); 
+  
+  const [totTime, setTotTime] = usePersistedState('totTime', getTotTime({queueToTotal: queue})); 
 
-  // used to check for a starting url, runs once
+  // update the hold q (persisted state) when the queue changes
   useEffect(() => {
 
-    // I still need to figure out how to load a timer queue on window load
-    // I've confirmed that it loads once and I have access to the pathname
-    // It's failing at the Router layer; unable to find the route
+    setHoldQ(queue);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // update the url when it changes or the queue changes
-  useEffect(() => {
-
-    updateURL(url, queue);
- 
-  }, [ url, queue ]);
+  }, [ queue, setHoldQ ]);
   
   useInterval(() => {
     // confirm total time of workout
@@ -64,8 +51,8 @@ const AppProvider = ({ children }) => {
         queue,
         setQueue,
         wkoutHistory,
-        url,
-        setUrl,
+        // url,
+        // setUrl,
         totTime,
         setTotTime,
         paused,
@@ -78,37 +65,42 @@ const AppProvider = ({ children }) => {
                     },
         addItem: item =>  {
           setQueue(q => [...q, item]);
-          setUrl({...url, wkout: JSON.stringify(queue)});
+          setHoldQ(q => [...q, item]);
+          // setUrl({...url, wkout: JSON.stringify(queue)});
           },
         updateItem: (item, index) => {
           const updatedQueue = queue.map((q, i) => index === i ? item : q);
           setQueue(updatedQueue);
-          setUrl({...url, wkout: JSON.stringify(queue)});
+          setHoldQ(updatedQueue);
+          // setUrl({...url, wkout: JSON.stringify(queue)});
         },
         removeItem: index => {
           setQueue(queue.filter((q, i) => i !== index));
-          setUrl({...url, wkout: JSON.stringify(queue)});
+          setHoldQ(queue.filter((q, i) => i !== index));
+          // setUrl({...url, wkout: JSON.stringify(queue)});
           },
         moveTimerUp: index => {
           if (index === 0)
             return
           else{
-            let holdQ = [...queue];
-            const holdTimer = holdQ.splice(index, 1)[0];
-            holdQ.splice(index-1, 0, holdTimer);
-            setQueue(holdQ);
-            setUrl({...url, wkout: JSON.stringify(queue)});
+            let tmp = [...queue];
+            const holdTimer = tmp.splice(index, 1)[0];
+            tmp.splice(index-1, 0, holdTimer);
+            setQueue(tmp);
+            setHoldQ(tmp);
+            // setUrl({...url, wkout: JSON.stringify(queue)});
           }
         },
         moveTimerDown: index => {
           if (index === (queue.length - 1))
             return
           else{
-            let holdQ = [...queue];
-            const holdTimer = holdQ.splice(index, 1)[0];
-            holdQ.splice(index + 1, 0, holdTimer);
-            setQueue(holdQ);
-            setUrl({...url, wkout: JSON.stringify(queue)});
+            let tmp = [...queue];
+            const holdTimer = tmp.splice(index, 1)[0];
+            tmp.splice(index + 1, 0, holdTimer);
+            setQueue(tmp);
+            setHoldQ(tmp);
+            // setUrl({...url, wkout: JSON.stringify(queue)});
           }
         },
         fastForward: index => {
